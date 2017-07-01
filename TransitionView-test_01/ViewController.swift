@@ -45,7 +45,7 @@ class ViewController: UIViewController {
         
         let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(ViewController.longPress(sender:)))
         longPressRecognizer.minimumPressDuration = 1.0
-
+        
         view1.addGestureRecognizer(longPressRecognizer)
     }
     
@@ -61,9 +61,8 @@ class ViewController: UIViewController {
         let offsetMargin : CGFloat = 30
         
         if (touchPoint.x.distance(to: center.x).isLessThanOrEqualTo(offsetMargin) ) {
-            print("ook")
             touchInside = true
-            presentAnimatedView(to: center.x - touchPoint.x)
+            
         }
         
     }
@@ -73,33 +72,65 @@ class ViewController: UIViewController {
             let touch = touches.first!
             let touchPoint = touch.location(in: view)
             let center = CGPoint(x: view.center.x + self.view2Width, y: view.center.y)
-            
-            if (center.x - touchPoint.x) < 40 {
-                presentAnimatedView(to: center.x - touchPoint.x)
+            let point = center.x - touchPoint.x
+               // presentAnimatedView(to: center.x - touchPoint.x)
+            if !open {
+                if (self.view2.frame.width < self.view2Width/2) {
+                    UIView.animate(withDuration: 0.3,  animations: {
+                        self.view2.frame = CGRect(x: 0, y: 0, width: point, height: 300)
+                        self.view2.center = CGPoint(x: self.view.center.x + self.view1.bounds.width/2 - point/2, y: self.view.center.y)
+                    }, completion: {
+                        (finished) in
+                        if self.view2.frame.width == self.view2Width{
+                            self.open = finished
+                            self.button.setTitle("CHIUDI", for: .normal)
+                        }
+                    })
+                } else {
+                    UIView.animate(withDuration: 0.15,  animations: {
+                        self.view2.frame = CGRect(x: 0, y: 0, width: point, height: 300)
+                        self.view2.center = CGPoint(x: self.view.center.x + self.view1.bounds.width/2 - point/2, y: self.view.center.y)
+                    }, completion: {
+                        (finished) in
+                        if self.view2.frame.width == self.view2Width{
+                            self.open = finished
+                            self.button.setTitle("CHIUDI", for: .normal)
+                        }
+                    })
+                }
+            }
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touchInside {
+            if !open && (self.view2.frame.width > self.view2Width/2) {
+                UIView.animate(withDuration: 0.15,  animations: {
+                    self.view2.frame = CGRect(x: 0, y: 0, width: self.view2Width, height: 300)
+                    self.view2.center = CGPoint(x: self.view.center.x + self.view1.bounds.width/2 - self.view2Width/2, y: self.view.center.y)
+                }, completion: {
+                    (finished) in
+                    self.open = finished
+                    self.touchInside = false
+                    self.button.setTitle("CHIUDI", for: .normal)
+                })
             } else {
-                presentAnimatedView(to: 200)
+                UIView.animate(withDuration: 0.15,  animations: {
+                    self.view2.frame = CGRect(x: 0, y: 0, width: 0, height: 300)
+                    self.view2.center = CGPoint(x: self.view.center.x + self.view2Width, y: self.view.center.y)
+                }, completion: {
+                    (finished) in
+                    self.open = false
+                    self.button.setTitle("APRI", for: .normal)
+                })
             }
         }
     }
     
     
-    
-    func presentAnimatedView(to point: CGFloat) {
-        if(open == false) {
-            UIView.animate(withDuration: 0.3,  animations: {
-                self.view2.frame = CGRect(x: 0, y: 0, width: point, height: 300)
-                self.view2.center = CGPoint(x: self.view.center.x + self.view1.bounds.width/2 - point/2, y: self.view.center.y)
-            }, completion: {
-                (finished) in
-                self.open = finished
-                self.button.setTitle("CHIUDI", for: .normal)
-            })
-        }
-    }
-    
     @objc func btnPressed() {
         if (open == false) {
-            UIView.animate(withDuration: 3,  animations: {
+            UIView.animate(withDuration: 0.5,  animations: {
                 self.view2.frame = CGRect(x: 0, y: 0, width: self.view2Width, height: 300)
                 self.view2.center = CGPoint(x: self.view.center.x + self.view2Width/2, y: self.view.center.y)
             }, completion: {
@@ -108,7 +139,7 @@ class ViewController: UIViewController {
                 self.button.setTitle("CHIUDI", for: .normal)
             })
         } else {
-            UIView.animate(withDuration: 3,  animations: {
+            UIView.animate(withDuration: 0.5,  animations: {
                 self.view2.frame = CGRect(x: 0, y: 0, width: 0, height: 300)
                 self.view2.center = CGPoint(x: self.view.center.x + self.view2Width, y: self.view.center.y)
             }, completion: {
