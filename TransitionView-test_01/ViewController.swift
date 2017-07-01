@@ -14,7 +14,7 @@ class ViewController: UIViewController {
     let view1 = UIView(frame: CGRect(x: 0, y: 0, width: 400, height: 300))
     let view2 = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 300))
     var open = false
-    
+    var touchInside = false
     var view2Width: CGFloat = 200
     
     override func viewDidLoad() {
@@ -42,8 +42,49 @@ class ViewController: UIViewController {
         view.addSubview(button)
         
         button.addTarget(self, action: #selector(ViewController.btnPressed), for: .touchDown)
+        
+        
     }
 
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first!
+        let touchPoint = touch.location(in: view)
+        let center = CGPoint(x: view.center.x + self.view2Width, y: view.center.y)
+        let offsetMargin : CGFloat = 30
+        
+        if (touchPoint.x.distance(to: center.x).isLessThanOrEqualTo(offsetMargin) ) {
+            print("ook")
+            touchInside = true
+            presentAnimatedView(to: center.x - touchPoint.x)
+        }
+        
+    }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if touchInside {
+            let touch = touches.first!
+            let touchPoint = touch.location(in: view)
+            let center = CGPoint(x: view.center.x + self.view2Width, y: view.center.y)
+            
+            if (center.x - touchPoint.x) < 40 {
+                presentAnimatedView(to: center.x - touchPoint.x)
+            } else {
+                presentAnimatedView(to: 200)
+            }
+        }
+    }
+    func presentAnimatedView(to point: CGFloat) {
+        if(open == false) {
+            UIView.animate(withDuration: 0.3,  animations: {
+                self.view2.frame = CGRect(x: 0, y: 0, width: point, height: 300)
+                self.view2.center = CGPoint(x: self.view.center.x + self.view1.bounds.width/2 - point/2, y: self.view.center.y)
+            }, completion: {
+                (finished) in
+                self.open = finished
+                self.button.setTitle("CHIUDI", for: .normal)
+            })
+        }
+    }
     
     @objc func btnPressed() {
         if (open == false) {
