@@ -43,9 +43,17 @@ class ViewController: UIViewController {
         
         button.addTarget(self, action: #selector(ViewController.btnPressed), for: .touchDown)
         
-        
-    }
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(ViewController.longPress(sender:)))
+        longPressRecognizer.minimumPressDuration = 1.0
 
+        view1.addGestureRecognizer(longPressRecognizer)
+    }
+    
+    @objc func longPress(sender : UIGestureRecognizer) {
+        print("longPress")
+        print(sender.location(in: self.view))
+    }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first!
         let touchPoint = touch.location(in: view)
@@ -73,6 +81,9 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    
+    
     func presentAnimatedView(to point: CGFloat) {
         if(open == false) {
             UIView.animate(withDuration: 0.3,  animations: {
